@@ -11,15 +11,15 @@ class Program
 
     static void Main()
     {
-        GenerateStepsDurations();   
+        GenerateStepsDurations();
         stopAllowed = new bool[numberThreads];
         Thread[] workerThreads = CreateWorkers();
         Thread controller = CreateController();
         controller.Start();
         foreach (Thread t in workerThreads)
-            {
-                t.Start();
-            }
+        {
+            t.Start();
+        }
         controller.Join();
         foreach (Thread t in workerThreads)
         {
@@ -48,8 +48,8 @@ class Program
     }
     static void SumElements(int index)
     {
-        int  step = steps[index];
-        long sum  = 0;
+        int step = steps[index];
+        long sum = 0;
         long count = 0;
         long currentElement = 0;
         while (true)
@@ -59,16 +59,16 @@ class Program
             {
                 shouldStop = stopAllowed[index];
             }
-            if (shouldStop) 
+            if (shouldStop)
             {
                 break;
             }
-            sum            += currentElement;
+            sum += currentElement;
             currentElement += step;
             count++;
         }
 
-        Console.WriteLine($"Thread {index+1}: sum={sum}, count={count}");
+        Console.WriteLine($"Thread {index + 1}: sum={sum}, count={count}");
     }
     static Thread CreateController()
     {
@@ -86,12 +86,12 @@ class Program
         Thread[] timers = new Thread[numberThreads];
         for (int i = 0; i < numberThreads; i++)
         {
-            int index    = i;
+            int index = i;
             int waitTime = duration[index];
             timers[i] = new Thread(() =>
             {
-                Thread.Sleep(waitTime);           
-                lock (lockObject)                    
+                Thread.Sleep(waitTime);
+                lock (lockObject)
                 {
                     stopAllowed[index] = true;
                 }
