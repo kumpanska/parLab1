@@ -3,12 +3,10 @@ using System.Threading;
 
 class Program
 {
-    static int numberThreads = 2;
+    static int numberThreads = 4;
     static int[] steps = new int[numberThreads];
     static int[] duration = new int[numberThreads];
     static bool[] stopAllowed;
-    static object lockObject = new object();
-
     static void Main()
     {
         GenerateStepsDurations();
@@ -19,11 +17,6 @@ class Program
         foreach (Thread t in workerThreads)
         {
             t.Start();
-        }
-        controller.Join();
-        foreach (Thread t in workerThreads)
-        {
-            t.Join();
         }
     }
     static void GenerateStepsDurations()
@@ -55,10 +48,7 @@ class Program
         while (true)
         {
             bool shouldStop;
-            lock (lockObject)
-            {
-                shouldStop = stopAllowed[index];
-            }
+            shouldStop = stopAllowed[index];
             if (shouldStop)
             {
                 break;
@@ -77,8 +67,6 @@ class Program
             Thread[] timers = CreateTimers();
             foreach (Thread t in timers)
                 t.Start();
-            foreach (Thread t in timers)
-                t.Join();
         });
     }
     static Thread[] CreateTimers()
@@ -91,10 +79,7 @@ class Program
             timers[i] = new Thread(() =>
             {
                 Thread.Sleep(waitTime);
-                lock (lockObject)
-                {
-                    stopAllowed[index] = true;
-                }
+                stopAllowed[index] = true;
             });
         }
         return timers;
